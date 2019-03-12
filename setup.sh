@@ -23,7 +23,8 @@ wget -O turbovnc.deb https://sourceforge.net/projects/turbovnc/files/2.2.1/turbo
 dpkg -i turbovnc.deb
 
 # Install Thor
-pip3 install ai2thor setproctitle tensorboardX
+#pip3 install ai2thor setproctitle tensorboardX
+~/anaconda2/envs/py36/bin/pip install ai2thor setproctitle tensorboardX
 
 # Grab the executable for Thor
 wget https://courses.cs.washington.edu/courses/cse573/19wi/project/builds.tar.gz

@@ -77,6 +77,7 @@ def main():
     print("Testing...")
     # Turn on random initialization for testing
     args.randomize_objects = True
+    #args.randomize_objects = False
     end_flag.value = False
     test_res_queue = mp.Queue()
     for rank in range(0, args.workers):
@@ -97,6 +98,7 @@ def main():
 
     try:
         while test_total_ep < args.num_test_episodes:
+            print(test_total_ep)
             test_result = test_res_queue.get()
             test_scalars.add_scalars(test_result)
             test_total_ep += 1
