@@ -92,7 +92,7 @@ class Episode:
         self.success = self.tomato_success & self.bowl_success
         # double success
         if self.success:
-        	reward *= 2
+        	reward += 2 * GOAL_SUCCESS_REWARD
 
         return reward, done, action_was_successful
 
