@@ -4,3 +4,4 @@ models
 turbovnc.deb
 virtualgl.deb
 __pycache__
+*.DS_Store
