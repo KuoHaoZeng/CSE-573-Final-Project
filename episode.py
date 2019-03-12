@@ -32,6 +32,9 @@ class Episode:
 
         self.actions_list = [{'action':a} for a in BASIC_ACTIONS]
         self.actions_taken = []
+        # # information about whether tomato/bowl is found; initial false
+        # self.tomato_done = False 
+        # self.bowl_done = False
 
     @property
     def environment(self):
@@ -66,13 +69,27 @@ class Episode:
         done = False
         action_was_successful = self.environment.last_action_success
 
-        if action['action'] == 'Done':
-            done = True
+        # if action is tomato done
+        if action['action'] == 'Tomato_Done':
+            self.tomato_done = True
             objects = self._env.last_event.metadata['objects']
             visible_objects = [o['objectType'] for o in objects if o['visible']]
-            if self.target in visible_objects:
+            if self.target[0] in visible_objects:
                 reward += GOAL_SUCCESS_REWARD
-                self.success = True
+                self.tomato_success = True
+        # if action is bowl done
+        if action['action'] == 'Bowl_Done':
+            self.bowl_done = True
+            objects = self._env.last_event.metadata['objects']
+            visible_objects = [o['objectType'] for o in objects if o['visible']]
+            if self.target[1] in visible_objects:
+                reward += GOAL_SUCCESS_REWARD
+                self.bowl_success = True
+
+        # an episode is done only if tomato action is done and bowl action is done
+        done = self.tomato_done & self.bowl_done
+        # an episode is success only if tomato is found and bowl is found
+        self.success = self.tomato_success & self.bowl_success
 
         return reward, done, action_was_successful
 
@@ -94,10 +111,16 @@ class Episode:
         else:
             self._env.reset(scene)
 
-        # For now, single target.
-        self.target = 'Tomato'
+        # two targets: tomato and bowl
+        self.target = ['Tomato','Bowl']
+        # whether find objects successfully, initial false
         self.success = False
+        self.tomato_success = False
+        self.bowl_success = False
         self.cur_scene = scene
         self.actions_taken = []
+        # whether action object_done has taken, initial false
+        self.tomato_done = False 
+        self.bowl_done = False
         
         return True
