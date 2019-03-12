@@ -4,7 +4,7 @@ ROTATE_LEFT = 'RotateLeft'
 ROTATE_RIGHT = 'RotateRight'
 LOOK_UP = 'LookUp'
 LOOK_DOWN = 'LookDown'
-DONE = 'Done'
+# DONE = 'Done'
 TOMATO_DONE = 'Done'
 BOWL_DONE = 'Done'
 
