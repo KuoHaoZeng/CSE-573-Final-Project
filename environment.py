@@ -73,20 +73,26 @@ class Environment:
         self.y = self.controller.last_event.metadata['agent']['position']['y']
         self.controller.step(dict(action='ToggleHideAndSeekObjects'))
         self.randomize_agent_location()
-        self.controller.step(dict(action='InitialRandomSpawn', forceVisible=True, maxNumRepeats=10, randomSeed=0))
+        self.seed = 0
+        self.controller.step(dict(action='InitialRandomSpawn', forceVisible=True, maxNumRepeats=10, randomSeed=self.seed))
 
 
-    def reset(self, scene_name):
+    def reset(self, scene_name, change_seed=True):
         """ Reset the scene. """
         self.controller.reset(scene_name)
         self.controller.step(dict(action='Initialize', gridSize=self.grid_size, fieldOfView=self.fov))
+        if change_seed:
+            self.randomize_agent_location()
+        else:
+            self.teleport_agent_to(**self.start_state)
+
         self.y = self.controller.last_event.metadata['agent']['position']['y']
         self.controller.step(dict(action='ToggleHideAndSeekObjects'))
-        self.randomize_agent_location()
-        if self.randomize_objects:
-            self.controller.step(dict(action='InitialRandomSpawn', forceVisible=True, maxNumRepeats=10, randomSeed=random.randint(0, 1000000)))
+        if change_seed and self.randomize_objects:
+            self.seed = random.randint(0, 1000000)
+            self.controller.step(dict(action='InitialRandomSpawn', forceVisible=True, maxNumRepeats=10, randomSeed=self.seed))
         else:
-            self.controller.step(dict(action='InitialRandomSpawn', forceVisible=True, maxNumRepeats=10, randomSeed=0))
+            self.controller.step(dict(action='InitialRandomSpawn', forceVisible=True, maxNumRepeats=10, randomSeed=self.seed))
 
     def all_objects(self): 
         objects = self.controller.last_event.metadata['objects']
@@ -114,7 +120,7 @@ class Environment:
                     # Go back to previous state.
                     self.teleport_agent_to(curr_state.x, curr_state.y, curr_state.z, curr_state.rotation, curr_state.horizon)
                     self.last_event.metadata['lastActionSuccess'] = False
-        elif action_dict['action'] not in ['Tomato_Done', 'Bowl_Done']:
+        elif action_dict['action'] not in ['Tomato_Done','Bowl_Done']:
             return self.controller.step(action_dict)
 
     def teleport_agent_to(self, x, y, z, rotation, horizon):
