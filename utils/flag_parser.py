@@ -168,6 +168,16 @@ def parse_arguments():
         default=512,
         help='size of hidden state of LSTM.')
     parser.add_argument(
+        '--additional-state-sz',
+        type=int,
+        default=2,
+        help='size of additional state.')
+    parser.add_argument(
+        '--augmented-hidden-sz',
+        type=int,
+        default=64,
+        help='size of augmented hidden state for additional state.')
+    parser.add_argument(
         '--fov',
         type=float,
         default=90.0,

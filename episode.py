@@ -71,30 +71,33 @@ class Episode:
 
         # if action is tomato done
         if action['action'] == 'Tomato_Done':
-            self.tomato_done = True
             objects = self._env.last_event.metadata['objects']
             visible_objects = [o['objectType'] for o in objects if o['visible']]
             if self.target[0] in visible_objects:
-                reward += GOAL_SUCCESS_REWARD
+                self.tomato_done = True
+                reward += GOAL_SUCCESS_REWARD/2
                 self.tomato_success = True
+
         # if action is bowl done
         if action['action'] == 'Bowl_Done':
-            self.bowl_done = True
             objects = self._env.last_event.metadata['objects']
             visible_objects = [o['objectType'] for o in objects if o['visible']]
             if self.target[1] in visible_objects:
-                reward += GOAL_SUCCESS_REWARD
+                self.bowl_done = True
+                reward += GOAL_SUCCESS_REWARD/2
                 self.bowl_success = True
 
         # an episode is done only if tomato action is done and bowl action is done
-        done = self.tomato_done & self.bowl_done
+        #if self.tomato_done and self.bowl_done:
+        #    done = True
         # an episode is success only if tomato is found and bowl is found
-        self.success = self.tomato_success & self.bowl_success
-        # double success
-        if self.success:
-        	reward *= 2
+        if self.tomato_success and self.bowl_success:
+            #reward *= 2
+            self.success = True
+            reward += GOAL_SUCCESS_REWARD
+            done = True
 
-        return reward, done, action_was_successful
+        return reward, done, [action_was_successful, [self.tomato_done, self.bowl_done]]
 
     def new_episode(self, args, scene):
         
