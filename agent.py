@@ -22,7 +22,7 @@ class A3CAgent:
         self.rewards = []
         self.entropies = []
         self.done = True
-        self.info = None
+        self.info = [None, [False, False]]
         self.reward = 0
         self.hidden = None
         self.actions = []
@@ -43,6 +43,7 @@ class A3CAgent:
         model_input = ModelInput()
         model_input.state = self.preprocess_frame(self.episode.state_for_agent())
         model_input.hidden = self.hidden
+        model_input.additional_state_info = gpuify(torch.Tensor(self.info[1]).unsqueeze(0), self.gpu_id)
         model_output = self.model.forward(model_input)
         return model_output
 
