@@ -69,7 +69,7 @@ class Episode:
         done = False
         action_was_successful = self.environment.last_action_success
 
-        print(action['action'], action_was_successful)
+        # print(action['action'], action_was_successful)
         # if action is tomato done
         if action['action'] == 'Tomato_Done':
             objects = self._env.last_event.metadata['objects']
