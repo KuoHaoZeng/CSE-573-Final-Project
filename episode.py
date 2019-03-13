@@ -77,6 +77,8 @@ class Episode:
                 self.tomato_done = True
                 reward += GOAL_SUCCESS_REWARD/2
                 self.tomato_success = True
+            else:
+                reward += STEP_PENALTY
 
         # if action is bowl done
         if action['action'] == 'Bowl_Done':
@@ -86,23 +88,18 @@ class Episode:
                 self.bowl_done = True
                 reward += GOAL_SUCCESS_REWARD/2
                 self.bowl_success = True
+            else:
+                reward += STEP_PENALTY
 
         # an episode is done only if tomato action is done and bowl action is done
         #if self.tomato_done and self.bowl_done:
         #    done = True
         # an episode is success only if tomato is found and bowl is found
-<<<<<<< HEAD
-        self.success = self.tomato_success & self.bowl_success
-        # double success
-        if self.success:
-        	reward += 2 * GOAL_SUCCESS_REWARD
-=======
         if self.tomato_success and self.bowl_success:
             #reward *= 2
             self.success = True
             reward += GOAL_SUCCESS_REWARD
             done = True
->>>>>>> 59af9c2eefb147aa491dfb19816bf7798289e7f7
 
         return reward, done, [action_was_successful, [self.tomato_done, self.bowl_done]]
 
