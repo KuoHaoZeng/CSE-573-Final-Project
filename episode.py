@@ -3,7 +3,7 @@ import random
 import torch
 import time
 import sys
-from constants import GOAL_SUCCESS_REWARD, STEP_PENALTY, BASIC_ACTIONS
+from constants import GOAL_SUCCESS_REWARD, STEP_PENALTY, BASIC_ACTIONS, FAILED_ACTION_PENALTY
 from environment import Environment
 from utils.net_util import gpuify
 
@@ -65,27 +65,35 @@ class Episode:
     def judge(self, action):
         """ Judge the last event. """
         # immediate reward
-        reward = STEP_PENALTY 
+        reward = STEP_PENALTY/5
         done = False
         action_was_successful = self.environment.last_action_success
 
         # if action is tomato done
+        #if action['action'] == 'Tomato_Done' and self.tomato_done == False:
         if action['action'] == 'Tomato_Done':
+            self.tomato_done = True
             objects = self._env.last_event.metadata['objects']
             visible_objects = [o['objectType'] for o in objects if o['visible']]
-            if self.target[0] in visible_objects:
-                self.tomato_done = True
+            if self.target[0] in visible_objects and self.tomato_success == False:
                 reward += GOAL_SUCCESS_REWARD/2
                 self.tomato_success = True
-
+            else:
+                reward += FAILED_ACTION_PENALTY
         # if action is bowl done
-        if action['action'] == 'Bowl_Done':
+        #if action['action'] == 'Bowl_Done' and self.bowl_done == False:
+        elif action['action'] == 'Bowl_Done':
+            self.bowl_done = True
             objects = self._env.last_event.metadata['objects']
             visible_objects = [o['objectType'] for o in objects if o['visible']]
-            if self.target[1] in visible_objects:
-                self.bowl_done = True
+            if self.target[1] in visible_objects and self.bowl_success == False:
                 reward += GOAL_SUCCESS_REWARD/2
                 self.bowl_success = True
+            else:
+                reward += FAILED_ACTION_PENALTY
+        else:
+            if not action_was_successful:
+                reward += FAILED_ACTION_PENALTY
 
         # an episode is done only if tomato action is done and bowl action is done
         #if self.tomato_done and self.bowl_done:
@@ -94,7 +102,7 @@ class Episode:
         if self.tomato_success and self.bowl_success:
             #reward *= 2
             self.success = True
-            reward += GOAL_SUCCESS_REWARD
+            #reward += GOAL_SUCCESS_REWARD
             done = True
 
         return reward, done, [action_was_successful, [self.tomato_done, self.bowl_done]]
