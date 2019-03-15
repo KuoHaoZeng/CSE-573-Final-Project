@@ -69,8 +69,8 @@ class Episode:
         reward = STEP_PENALTY/5
         done = False
         action_was_successful = self.environment.last_action_success
-        self.num_step += 1
-        Image.fromarray(self._env.last_event.frame).save('demo/'+str(self.num_step)+'.jpg')
+        #self.num_step += 1
+        #Image.fromarray(self._env.last_event.frame).save('demo/'+str(self.num_step)+'.jpg')
 
         # if action is tomato done
         #if action['action'] == 'Tomato_Done' and self.tomato_done == False:
