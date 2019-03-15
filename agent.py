@@ -107,7 +107,8 @@ class A3CAgent:
             action = prob.multinomial(1).data
         else:
             # Take the best action.
-            action = prob.argmax(dim=1, keepdim=True).data
+            #action = prob.argmax(dim=1, keepdim=True).data
+            action = prob.multinomial(1).data
 
         log_prob = F.log_softmax(model_output.policy, dim=1)
         entropy = -(log_prob * prob).sum(1)

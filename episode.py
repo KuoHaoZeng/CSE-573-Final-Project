@@ -6,7 +6,7 @@ import sys
 from constants import GOAL_SUCCESS_REWARD, STEP_PENALTY, BASIC_ACTIONS, FAILED_ACTION_PENALTY
 from environment import Environment
 from utils.net_util import gpuify
-
+from PIL import Image
 
 class Episode:
     """ Episode for Navigation. """
@@ -32,6 +32,7 @@ class Episode:
 
         self.actions_list = [{'action':a} for a in BASIC_ACTIONS]
         self.actions_taken = []
+        self.num_step = 0
         # # information about whether tomato/bowl is found; initial false
         # self.tomato_done = False 
         # self.bowl_done = False
@@ -68,6 +69,8 @@ class Episode:
         reward = STEP_PENALTY/5
         done = False
         action_was_successful = self.environment.last_action_success
+        self.num_step += 1
+        Image.fromarray(self._env.last_event.frame).save('demo/'+str(self.num_step)+'.jpg')
 
         # if action is tomato done
         #if action['action'] == 'Tomato_Done' and self.tomato_done == False:
@@ -79,7 +82,10 @@ class Episode:
                 reward += GOAL_SUCCESS_REWARD/2
                 self.tomato_success = True
             else:
-                reward += FAILED_ACTION_PENALTY
+                #reward += FAILED_ACTION_PENALTY
+                all_objects = [o['objectType'] for o in objects]
+                idx = all_objects.index(self.target[0])
+                reward -= objects[idx]['distance'] * 0.1
         # if action is bowl done
         #if action['action'] == 'Bowl_Done' and self.bowl_done == False:
         elif action['action'] == 'Bowl_Done':
@@ -90,7 +96,10 @@ class Episode:
                 reward += GOAL_SUCCESS_REWARD/2
                 self.bowl_success = True
             else:
-                reward += FAILED_ACTION_PENALTY
+                #reward += FAILED_ACTION_PENALTY
+                all_objects = [o['objectType'] for o in objects]
+                idx = all_objects.index(self.target[1])
+                reward -= objects[idx]['distance'] * 0.1
         else:
             if not action_was_successful:
                 reward += FAILED_ACTION_PENALTY
